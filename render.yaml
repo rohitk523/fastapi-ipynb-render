@@ -1,12 +1,16 @@
 services:
   - type: web
-    name: fastapi-ipynb-render
+    name: your-app-name
     runtime: python
     buildCommand: bash ./build.sh
     startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
     env:
       - key: PYTHON_VERSION
         value: 3.9
-    envVars:
-      - key: PYTHON_VERSION
-        value: 3.9
+    autoDeploy: true
+    buildFilter:
+      paths:
+        - notebooks/**/*.ipynb
+        - app/**/*.py
+        - requirements.txt
+        - build.sh
