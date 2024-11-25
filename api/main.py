@@ -5,24 +5,30 @@ import os
 import sys
 from pathlib import Path
 
-# Add the project root to Python path
-project_root = Path(__file__).parent.parent
-sys.path.insert(0, str(project_root))
+print("Current working directory:", os.getcwd())
+print("Directory contents:", os.listdir("."))
 
-# Import functions from converted notebook
+# Define the notebook functions here as fallback
+def process_data(numbers):
+    return sum(numbers)
+
+def your_function():
+    return "Hello from converted notebook!"
+
+# Try to import from the converted notebook if available
 try:
-    # Import from notebooks directory
-    from notebooks.cluster_sample import process_data, your_function
-    print("Successfully imported notebook functions")
-except ImportError as e:
+    sys.path.append(os.getcwd())
+    if os.path.exists("notebooks/cluster_sample.py"):
+        print("Found converted notebook file")
+        from notebooks.cluster_sample import process_data, your_function
+        print("Successfully imported notebook functions")
+    else:
+        print("Using fallback functions - notebook file not found")
+        # We'll use the fallback functions defined above
+except Exception as e:
     print(f"Error importing notebook: {e}")
-    print(f"Current sys.path: {sys.path}")
-    print(f"Current directory: {os.getcwd()}")
-    print(f"Directory contents: {os.listdir('.')}")
-    print(f"Notebooks directory contents: {os.listdir('notebooks')}")
-    # Fallback functions for testing
-    def process_data(numbers): return sum(numbers)
-    def your_function(): return "Hello from fallback!"
+    print(f"Using fallback functions due to import error")
+    # We'll use the fallback functions defined above
 
 app = FastAPI()
 

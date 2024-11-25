@@ -5,15 +5,27 @@ echo "Starting build process..."
 # Install dependencies
 pip install -r requirements.txt
 
-# Create __init__.py in notebooks directory if it doesn't exist
+# Ensure we're in the correct directory
+cd "$(dirname "$0")"
+
+# Create notebooks directory if it doesn't exist
+mkdir -p notebooks
+
+# Create __init__.py in notebooks directory
 touch notebooks/__init__.py
 
-# Convert notebooks
+# Go to notebooks directory
 cd notebooks
+
+echo "Current directory: $(pwd)"
+echo "Directory contents before conversion:"
+ls -la
+
+# Convert notebooks
 for notebook in *.ipynb; do
     if [ -f "$notebook" ]; then
         echo "Converting $notebook to Python script..."
-        python -m jupyter nbconvert --to python "$notebook"
+        jupyter nbconvert --to python "$notebook"
         
         # Clean up the converted file
         py_file="${notebook%.ipynb}.py"
@@ -23,7 +35,7 @@ for notebook in *.ipynb; do
             sed -i '/^%/d' "$py_file"
             echo "Successfully converted $notebook to $py_file"
             
-            # Print the contents of the converted file for debugging
+            # Print the contents of the converted file
             echo "Contents of $py_file:"
             cat "$py_file"
         else
@@ -32,10 +44,8 @@ for notebook in *.ipynb; do
         fi
     fi
 done
+
+echo "Directory contents after conversion:"
+ls -la
+
 cd ..
-
-# Print directory structure for debugging
-echo "Final directory structure:"
-find . -type f -name "*.py" -o -name "*.ipynb"
-
-echo "Build process completed."
