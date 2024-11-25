@@ -3,4 +3,5 @@ uvicorn
 jupyter
 nbconvert
 notebook
-ipython
+python-multipart
+pydantic

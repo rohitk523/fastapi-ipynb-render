@@ -7,28 +7,28 @@ from pathlib import Path
 
 print("Current working directory:", os.getcwd())
 print("Directory contents:", os.listdir("."))
-
-# Define the notebook functions here as fallback
-def process_data(numbers):
-    return sum(numbers)
-
-def your_function():
-    return "Hello from converted notebook!"
+print("Notebooks directory contents:", os.listdir("notebooks"))
 
 # Try to import from the converted notebook if available
+notebook_functions_loaded = False
+
 try:
-    sys.path.append(os.getcwd())
-    if os.path.exists("notebooks/cluster_sample.py"):
-        print("Found converted notebook file")
-        from notebooks.cluster_sample import process_data, your_function
-        print("Successfully imported notebook functions")
-    else:
-        print("Using fallback functions - notebook file not found")
-        # We'll use the fallback functions defined above
+    notebook_path = os.path.join(os.getcwd(), "notebooks")
+    if notebook_path not in sys.path:
+        sys.path.append(notebook_path)
+    
+    from cluster_sample import process_data, your_function
+    notebook_functions_loaded = True
+    print("Successfully loaded functions from notebook!")
 except Exception as e:
-    print(f"Error importing notebook: {e}")
-    print(f"Using fallback functions due to import error")
-    # We'll use the fallback functions defined above
+    print(f"Error loading notebook functions: {e}")
+    print("Using fallback functions")
+    
+    def process_data(numbers):
+        return sum(numbers)
+    
+    def your_function():
+        return "Hello from fallback function!"
 
 app = FastAPI()
 
@@ -37,13 +37,16 @@ class DataInput(BaseModel):
 
 @app.get("/")
 def read_root():
-    return {"message": "Hello from FastAPI!"}
+    return {
+        "message": "Hello from FastAPI!",
+        "using_notebook_functions": notebook_functions_loaded
+    }
 
 @app.post("/process")
 def process_numbers(data: DataInput):
     result = process_data(data.numbers)
-    return {"result": result}
+    return {"result": result, "using_notebook_functions": notebook_functions_loaded}
 
 @app.get("/notebook-endpoint")
 def notebook_endpoint():
-    return {"result": your_function()}
+    return {"result": your_function(), "using_notebook_functions": notebook_functions_loaded}

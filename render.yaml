@@ -2,16 +2,13 @@ services:
   - type: web
     name: your-app-name
     runtime: python
-    buildCommand: bash ./build.sh
-    startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
+    buildCommand: |
+      chmod +x build.sh
+      chmod +x start.sh
+      ./build.sh
+    startCommand: ./start.sh
     env:
       - key: PYTHON_VERSION
         value: 3.9
       - key: PYTHONPATH
         value: .
-    buildFilter:
-      paths:
-        - notebooks/**/*.ipynb
-        - api/**/*.py
-        - requirements.txt
-        - build.sh

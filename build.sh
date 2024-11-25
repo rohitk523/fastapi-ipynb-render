@@ -1,51 +1,37 @@
 #!/bin/bash
 
+set -e  # Exit on error
+set -x  # Print commands for debugging
+
 echo "Starting build process..."
 
 # Install dependencies
 pip install -r requirements.txt
 
-# Ensure we're in the correct directory
-cd "$(dirname "$0")"
+# Display current directory and contents
+pwd
+ls -la
 
-# Create notebooks directory if it doesn't exist
-mkdir -p notebooks
-
-# Create __init__.py in notebooks directory
-touch notebooks/__init__.py
-
-# Go to notebooks directory
+# Go to notebooks directory and convert
 cd notebooks
-
-echo "Current directory: $(pwd)"
-echo "Directory contents before conversion:"
+echo "Contents of notebooks directory:"
 ls -la
 
-# Convert notebooks
-for notebook in *.ipynb; do
-    if [ -f "$notebook" ]; then
-        echo "Converting $notebook to Python script..."
-        jupyter nbconvert --to python "$notebook"
-        
-        # Clean up the converted file
-        py_file="${notebook%.ipynb}.py"
-        if [ -f "$py_file" ]; then
-            # Remove IPython specific commands
-            sed -i '/^get_ipython()/d' "$py_file"
-            sed -i '/^%/d' "$py_file"
-            echo "Successfully converted $notebook to $py_file"
-            
-            # Print the contents of the converted file
-            echo "Contents of $py_file:"
-            cat "$py_file"
-        else
-            echo "Failed to convert $notebook"
-            exit 1
-        fi
-    fi
-done
+# Convert the notebook
+echo "Converting notebook..."
+jupyter-nbconvert --to python cluster_sample.ipynb
 
-echo "Directory contents after conversion:"
+# Verify the conversion
+echo "Contents after conversion:"
 ls -la
+
+# Display the converted file contents
+echo "Contents of converted Python file:"
+cat cluster_sample.py
 
 cd ..
+
+echo "Final directory structure:"
+find . -type f -name "*.py"
+
+echo "Build process completed."
