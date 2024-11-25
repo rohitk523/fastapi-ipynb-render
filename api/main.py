@@ -9,7 +9,7 @@ sys.path.append(str(Path(__file__).parent.parent / "notebooks"))
 
 # Import functions from converted notebook
 try:
-    from cluster_sample import process_data, your_function
+    from notebooks.cluster_sample import process_data, your_function
 except ImportError as e:
     print(f"Error importing notebook: {e}")
     # Fallback functions for testing
