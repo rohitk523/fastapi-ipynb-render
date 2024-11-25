@@ -1,20 +1,25 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import List
+import os
 import sys
 from pathlib import Path
 
-# Add the notebooks directory to Python path
-notebook_path = Path(__file__).parent.parent / "notebooks"
-sys.path.append(str(notebook_path))
+# Add the project root to Python path
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
 
 # Import functions from converted notebook
 try:
-    # Import directly from the module (without 'notebooks.' prefix)
-    from cluster_sample import process_data, your_function
+    # Import from notebooks directory
+    from notebooks.cluster_sample import process_data, your_function
+    print("Successfully imported notebook functions")
 except ImportError as e:
     print(f"Error importing notebook: {e}")
-    print(f"Current sys.path: {sys.path}")  # For debugging
+    print(f"Current sys.path: {sys.path}")
+    print(f"Current directory: {os.getcwd()}")
+    print(f"Directory contents: {os.listdir('.')}")
+    print(f"Notebooks directory contents: {os.listdir('notebooks')}")
     # Fallback functions for testing
     def process_data(numbers): return sum(numbers)
     def your_function(): return "Hello from fallback!"
@@ -36,7 +41,3 @@ def process_numbers(data: DataInput):
 @app.get("/notebook-endpoint")
 def notebook_endpoint():
     return {"result": your_function()}
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
