@@ -17,7 +17,8 @@ try:
     if notebook_path not in sys.path:
         sys.path.append(notebook_path)
     
-    from cluster_sample import process_data, your_function
+    from cluster_sample import your_function
+    from new_cluster import process_data
     notebook_functions_loaded = True
     print("Successfully loaded functions from notebook!")
 except Exception as e:
